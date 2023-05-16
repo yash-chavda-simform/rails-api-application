@@ -2,6 +2,7 @@ module Api
   module V1
     class ArticlesController < ApplicationController
       before_action :set_article, only: [:show, :update, :destroy]
+
       def index
         @articles = Article.page(params[:page]).per(params[:per_page])
         render json: @articles 
@@ -29,8 +30,11 @@ module Api
       end
       
       def destroy
-        @article.delete
-        render json: @article, status: :ok
+        if @article.destroy
+          render json: @article, status: :ok
+        else
+          render json: @article.errors, status: :unprocessable_entity
+        end
       end
            
       def search
@@ -39,6 +43,7 @@ module Api
       end
 
       private
+
       def article_params
         params.require(:article).permit(:title, :body, :release_date)
       end
