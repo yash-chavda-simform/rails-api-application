@@ -30,8 +30,11 @@ module Api
       end
       
       def destroy
-        @comment.delete
-        render json: @comment, status: :ok
+        if @comment.destroy
+          render json: @comment, status: :ok
+        else
+          render json: @comment.errors, status: :unprocessable_entity
+        end
       end
 
       def search
@@ -40,7 +43,7 @@ module Api
       end
            
       private
-      
+
       def comment_params
         params.require(:comment).permit(:content, :date_of_comment, :article_id)
       end
